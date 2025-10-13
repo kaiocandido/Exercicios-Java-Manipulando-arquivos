@@ -1,45 +1,37 @@
-import entities.Product;
+import models.entities.Contract;
+import models.entities.Installment;
+import models.service.ContractService;
+import models.service.PaypalService;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         Locale.setDefault(Locale.US);
         Scanner sc = new Scanner(System.in);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        List<Product> list = new ArrayList<>();
 
-        System.out.println("Digite o caminho do arquivo: ");
-        String srcPath = sc.nextLine();
+        System.out.println("Entre com os dados do contrato: ");
+        System.out.print("Numero: ");
+        Integer number = sc.nextInt();
+        System.out.print("Data (dd/MM/yyyy): ");
+        sc.nextLine();
+        LocalDate start = LocalDate.parse(sc.nextLine(), fmt);
+        System.out.print("Entre com o valor do contrato: ");
+        Double value = sc.nextDouble();
 
-        File sourceFile = new File(srcPath);
-        String sourceFolderStr = sourceFile.getParent();
-        boolean sucess = new File(sourceFolderStr + "\\out").mkdir();
-        System.out.println("Pasta criada: " + sucess);
-        String targtFileStr = sourceFolderStr + "\\out\\summary.csv";
+        Contract contract = new Contract(value, start, number);
 
-        try(BufferedReader br =  new BufferedReader(new FileReader(srcPath))){
-            String itemCsv = br.readLine();
-            while (itemCsv != null){
-                String[] filds = itemCsv.split(",");
-                String name = filds[0];
-                Double price = Double.parseDouble(filds[1]);
-                Integer qntd = Integer.parseInt(filds[2]);
+        System.out.print("Entre com o numero de parcelas: ");
+        Integer parcelas = sc.nextInt();
 
-                list.add(new Product(name,price,qntd));
+        ContractService contractService = new ContractService(new PaypalService());
 
+<<<<<<< HEAD
                 itemCsv = br.readLine();
             }
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(targtFileStr))) {
@@ -51,7 +43,16 @@ public class Main {
         }
         catch (IOException e){
             System.out.println(e.getMessage());
+=======
+        contractService.processContract(contract, parcelas);
+
+
+        System.out.println("Parcelas: ");
+        for (Installment installment : contract.getInstallments()){
+            System.out.println(installment);
+>>>>>>> e6c92d0 (resolvido)
         }
+
 
         sc.close();
     }
